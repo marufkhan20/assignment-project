@@ -10,6 +10,19 @@ export const getAllProduct = async () => {
   }
 };
 
+export const getProductBySearch = async ({ title, category, maxPrice }) => {
+  try {
+    let res = await axios.post(`${apiURL}/api/product/product-by-search`, {
+      title,
+      category,
+      maxPrice,
+    });
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const createPorductImage = async ({ pImage }) => {
   /* Most important part for uploading multiple image  */
   let formData = new FormData();

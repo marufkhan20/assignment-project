@@ -1,8 +1,8 @@
-import React, { Fragment, useState, useEffect, useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { getAllProduct } from "../../admin/products/FetchApi";
 import { HomeContext } from "./index";
-import { isWishReq, unWishReq, isWish } from "./Mixins";
+import { isWish, isWishReq, unWishReq } from "./Mixins";
 
 const apiURL = process.env.REACT_APP_API_URL;
 
@@ -10,6 +10,8 @@ const SingleProduct = (props) => {
   const { data, dispatch } = useContext(HomeContext);
   const { products } = data;
   const history = useHistory();
+
+  console.log("products", products);
 
   /* WhisList State */
   const [wList, setWlist] = useState(
@@ -57,11 +59,11 @@ const SingleProduct = (props) => {
     );
   }
   return (
-    <Fragment>
+    <React.Fragment>
       {products && products.length > 0 ? (
         products.map((item, index) => {
           return (
-            <Fragment key={index}>
+            <React.Fragment key={index}>
               <div className="relative col-span-1 m-2">
                 <img
                   onClick={(e) => history.push(`/products/${item._id}`)}
@@ -133,7 +135,7 @@ const SingleProduct = (props) => {
                 </div>
                 {/* WhisList Logic End */}
               </div>
-            </Fragment>
+            </React.Fragment>
           );
         })
       ) : (
@@ -141,7 +143,7 @@ const SingleProduct = (props) => {
           No product found
         </div>
       )}
-    </Fragment>
+    </React.Fragment>
   );
 };
 

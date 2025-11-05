@@ -1,6 +1,7 @@
 const productModel = require("../models/products");
 const fs = require("fs");
 const path = require("path");
+const categoryModel = require("../models/categories");
 
 class Product {
   // Delete Image from uploads -> products folder
@@ -197,6 +198,72 @@ class Product {
       } catch (err) {
         console.log(err);
       }
+    }
+  }
+
+  async getProductBySearch(req, res) {
+    let { title, category, maxPrice } = req.body;
+
+    // Validate required field
+    if (!maxPrice || isNaN(maxPrice)) {
+      return res
+        .status(400)
+        .json({ error: "All fields must be valid. 'maxPrice' is required." });
+    }
+
+    try {
+      // Build dynamic query
+      let query = {
+        pPrice: { $lte: Number(maxPrice) },
+      };
+
+      if (title && title.trim() !== "") {
+        query.pName = { $regex: title, $options: "i" };
+      }
+
+      if (category && category.trim() !== "") {
+        // Find category IDs matching the title (case-insensitive)
+        const categories = await categoryModel
+          .find({
+            cName: { $regex: category, $options: "i" },
+          })
+          .select("_id");
+
+        const categoryIds = categories.map((c) => c._id);
+
+        // Query products with matching category IDs
+        const products = await productModel.find({
+          pPrice: { $lte: Number(maxPrice) },
+          pCategory: { $in: categoryIds },
+          pName: { $regex: title, $options: "i" },
+        });
+
+        if (products) {
+          return res.json({
+            success: true,
+            items: products,
+            count: products.length,
+          });
+        } else {
+          return res.json({ success: true, items: [], count: 0 });
+        }
+      }
+
+      // Find products
+      let products = await productModel.find(query).limit(50);
+
+      if (products) {
+        return res.json({
+          success: true,
+          items: products,
+          count: products.length,
+        });
+      } else {
+        return res.json({ success: true, items: [], count: 0 });
+      }
+    } catch (err) {
+      console.log("productBySearch error:", err);
+      return res.status(500).json({ error: "Something went wrong" });
     }
   }
 

@@ -1,7 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { getAllCategory } from "../../admin/categories/FetchApi";
-import { getAllProduct, productByPrice } from "../../admin/products/FetchApi";
+import {
+  getProductBySearch,
+  productByPrice,
+} from "../../admin/products/FetchApi";
 import { HomeContext } from "./index";
 import "./style.css";
 
@@ -58,9 +61,8 @@ const CategoryList = () => {
   );
 };
 
-const FilterList = () => {
+const FilterList = ({ range, setRange }) => {
   const { data, dispatch } = useContext(HomeContext);
-  const [range, setRange] = useState(0);
 
   const rangeHandle = (e) => {
     setRange(e.target.value);
@@ -70,9 +72,11 @@ const FilterList = () => {
   const fetchData = async (price) => {
     if (price === "all") {
       try {
-        let responseData = await getAllProduct();
-        if (responseData && responseData.Products) {
-          dispatch({ type: "setProducts", payload: responseData.Products });
+        let responseData = await getProductBySearch({
+          maxPrice: range,
+        });
+        if (responseData && responseData.items) {
+          dispatch({ type: "setProducts", payload: responseData.items });
         }
       } catch (error) {
         console.log(error);
@@ -144,13 +148,11 @@ const FilterList = () => {
   );
 };
 
-const Search = () => {
+const Search = ({ maxPrice }) => {
   const { data, dispatch } = useContext(HomeContext);
   const [search, setSearch] = useState("");
   const [categorySearch, setCategorySearch] = useState("");
   const [productArray, setPa] = useState(null);
-
-  console.log("product array", productArray);
 
   const searchHandle = (e) => {
     setSearch(e.target.value);
@@ -176,9 +178,16 @@ const Search = () => {
     dispatch({ type: "loading", payload: true });
     try {
       setTimeout(async () => {
-        let responseData = await getAllProduct();
-        if (responseData && responseData.Products) {
-          setPa(responseData.Products);
+        let responseData = await getProductBySearch({
+          title: search,
+          category: categorySearch,
+          maxPrice,
+        });
+
+        console.log("responseData", responseData.items);
+        if (responseData && responseData.items) {
+          // setPa(responseData.items);
+          dispatch({ type: "setProducts", payload: responseData.items });
           dispatch({ type: "loading", payload: false });
         }
       }, 700);
@@ -260,11 +269,12 @@ const Search = () => {
 };
 
 const ProductCategoryDropdown = (props) => {
+  const [range, setRange] = useState(0);
   return (
     <React.Fragment>
       <CategoryList />
-      <FilterList />
-      <Search />
+      <FilterList range={range} setRange={setRange} />
+      <Search maxPrice={range} />
     </React.Fragment>
   );
 };

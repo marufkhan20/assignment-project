@@ -21,13 +21,13 @@ export const homeReducer = (state, action) => {
         ...state,
         categoryListDropdown: false,
         filterListDropdown: action.payload,
-        searchDropdown: false,
+        // searchDropdown: false,
       };
     case "searchDropdown":
       return {
         ...state,
         categoryListDropdown: false,
-        filterListDropdown: false,
+        // filterListDropdown: false,
         searchDropdown: action.payload,
       };
     case "setProducts":

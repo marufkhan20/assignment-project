@@ -1,8 +1,8 @@
-import React, { Fragment, useContext, useState, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { HomeContext } from "./index";
 import { getAllCategory } from "../../admin/categories/FetchApi";
 import { getAllProduct, productByPrice } from "../../admin/products/FetchApi";
+import { HomeContext } from "./index";
 import "./style.css";
 
 const apiURL = process.env.REACT_APP_API_URL;
@@ -34,7 +34,7 @@ const CategoryList = () => {
         {categories && categories.length > 0 ? (
           categories.map((item, index) => {
             return (
-              <Fragment key={index}>
+              <React.Fragment key={index}>
                 <div
                   onClick={(e) =>
                     history.push(`/products/category/${item._id}`)
@@ -47,7 +47,7 @@ const CategoryList = () => {
                   />
                   <div className="font-medium">{item.cName}</div>
                 </div>
-              </Fragment>
+              </React.Fragment>
             );
           })
         ) : (
@@ -147,10 +147,23 @@ const FilterList = () => {
 const Search = () => {
   const { data, dispatch } = useContext(HomeContext);
   const [search, setSearch] = useState("");
+  const [categorySearch, setCategorySearch] = useState("");
   const [productArray, setPa] = useState(null);
+
+  console.log("product array", productArray);
 
   const searchHandle = (e) => {
     setSearch(e.target.value);
+    fetchData();
+    dispatch({
+      type: "searchHandleInReducer",
+      payload: e.target.value,
+      productArray: productArray,
+    });
+  };
+
+  const categorySearchHandle = (e) => {
+    setCategorySearch(e.target.value);
     fetchData();
     dispatch({
       type: "searchHandleInReducer",
@@ -182,33 +195,65 @@ const Search = () => {
   };
 
   return (
-    <div
-      className={`${
-        data.searchDropdown ? "" : "hidden"
-      } my-4 flex items-center justify-between`}
-    >
-      <input
-        value={search}
-        onChange={(e) => searchHandle(e)}
-        className="px-4 text-xl py-4 focus:outline-none"
-        type="text"
-        placeholder="Search products..."
-      />
-      <div onClick={(e) => closeSearchBar()} className="cursor-pointer">
-        <svg
-          className="w-8 h-8 text-gray-700 hover:bg-gray-200 rounded-full p-1"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
+    <div className="grid grid-cols-2 gap-5">
+      <div
+        className={`${
+          data.searchDropdown ? "" : "hidden"
+        } my-4 flex items-center justify-between`}
+      >
+        <input
+          value={search}
+          onChange={(e) => searchHandle(e)}
+          className="px-4 text-xl py-4 focus:outline-none"
+          type="text"
+          placeholder="Search products by title"
+        />
+        <div onClick={(e) => closeSearchBar()} className="cursor-pointer">
+          <svg
+            className="w-8 h-8 text-gray-700 hover:bg-gray-200 rounded-full p-1"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </div>
+      </div>
+
+      <div
+        className={`${
+          data.searchDropdown ? "" : "hidden"
+        } my-4 flex items-center justify-between`}
+      >
+        <input
+          value={categorySearch}
+          onChange={(e) => categorySearchHandle(e)}
+          className="px-4 text-xl py-4 focus:outline-none"
+          type="text"
+          placeholder="Search products by category"
+        />
+        <div onClick={(e) => closeSearchBar()} className="cursor-pointer">
+          <svg
+            className="w-8 h-8 text-gray-700 hover:bg-gray-200 rounded-full p-1"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </div>
       </div>
     </div>
   );
@@ -216,11 +261,11 @@ const Search = () => {
 
 const ProductCategoryDropdown = (props) => {
   return (
-    <Fragment>
+    <React.Fragment>
       <CategoryList />
       <FilterList />
       <Search />
-    </Fragment>
+    </React.Fragment>
   );
 };
 

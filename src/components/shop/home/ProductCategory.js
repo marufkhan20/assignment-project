@@ -1,4 +1,4 @@
-import React, { Fragment, useContext } from "react";
+import React, { useContext } from "react";
 import ProductCategoryDropdown from "./ProductCategoryDropdown";
 import { HomeContext } from "./index";
 
@@ -6,7 +6,7 @@ const ProductCategory = (props) => {
   const { data, dispatch } = useContext(HomeContext);
 
   return (
-    <Fragment>
+    <React.Fragment>
       <div className="flex justify-between font-medium">
         <div
           onClick={(e) =>
@@ -37,19 +37,31 @@ const ProductCategory = (props) => {
             ></path>
           </svg>
         </div>
-        <div className="flex space-x-2">
+        <div
+          className="flex space-x-2 cursor-pointer"
+          onClick={() => {
+            dispatch({
+              type: "filterListDropdown",
+              payload: !data.filterListDropdown,
+            });
+            dispatch({
+              type: "searchDropdown",
+              payload: !data.searchDropdown,
+            });
+          }}
+        >
           <div
-            onClick={(e) =>
-              dispatch({
-                type: "filterListDropdown",
-                payload: !data.filterListDropdown,
-              })
-            }
+            // onClick={(e) =>
+            //   dispatch({
+            //     type: "filterListDropdown",
+            //     payload: !data.filterListDropdown,
+            //   })
+            // }
             className={`flex items-center space-x-1 cursor-pointer ${
               data.filterListDropdown ? "text-yellow-700" : ""
             }`}
           >
-            <span className="text-md md:text-lg">Filter</span>
+            <span className="text-md md:text-lg">Filtersd</span>
             <span>
               <svg
                 className="w-4 h-4 text-gray-700 text-yellow-700"
@@ -69,12 +81,12 @@ const ProductCategory = (props) => {
           </div>
           <span>/</span>
           <div
-            onClick={(e) =>
-              dispatch({
-                type: "searchDropdown",
-                payload: !data.searchDropdown,
-              })
-            }
+            // onClick={(e) =>
+            //   dispatch({
+            //     type: "searchDropdown",
+            //     payload: !data.searchDropdown,
+            //   })
+            // }
             className={`flex items-center space-x-1 cursor-pointer ${
               data.searchDropdown ? "text-yellow-700" : ""
             }`}
@@ -100,7 +112,7 @@ const ProductCategory = (props) => {
         </div>
       </div>
       <ProductCategoryDropdown />
-    </Fragment>
+    </React.Fragment>
   );
 };
 
